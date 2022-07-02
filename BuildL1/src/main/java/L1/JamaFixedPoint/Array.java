@@ -21,8 +21,8 @@
 % PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 */
 
-package JamaFixedPoint;
-import FixedPointMath.FPMath;
+package L1.JamaFixedPoint;
+import L1.FixedPointMath.FPMath;
 
 public class Array {
 	private int[] arr;

@@ -1,4 +1,4 @@
-package FixedPointMath;
+package L1.FixedPointMath;
 public class MathTest{
 	public static void main(String[] args){
 		

@@ -1,4 +1,4 @@
-package FixedPointMath;
+package L1.FixedPointMath;
 /**
  *
  * 16:16 fixed point math routines, for IAppli/CLDC platform.
@@ -200,7 +200,6 @@ public class FPMath {
 	e^x = 1 + x/1! + x^2/2! + x^3/3!
 
 	 */
-
 	static int fpfact[] = { 1<<16,
 		1<<16,
 		2<<16,

@@ -1,8 +1,10 @@
-import FixedPointMath.FPMath;
-import JamaFixedPoint.Array;
-import JamaFixedPoint.Helper;
-import JamaFixedPoint.Matrix;
-import JamaFixedPoint.SupportSet;
+package L1;
+
+import L1.FixedPointMath.FPMath;
+import L1.JamaFixedPoint.Array;
+import L1.JamaFixedPoint.Helper;
+import L1.JamaFixedPoint.Matrix;
+import L1.JamaFixedPoint.SupportSet;
 
 public class HomotopyFP {
 	static int N;

@@ -1,12 +1,11 @@
-package JamaFixedPoint.test;
+package L1.JamaFixedPoint.test;
 
 import java.io.*;
-import java.util.zip.GZIPInputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import JamaFixedPoint.*;
+import L1.JamaFixedPoint.*;
 
 
 /** TestMatrix tests the functionality of the Jama Matrix class and associated decompositions.
@@ -731,7 +730,7 @@ public class TestMatrix {
          errorCount = try_failure(errorCount,"normInf()...","incorrect norm calculation");
       }
       try {
-         check(A.normF(),FixedPointMath.FPMath.FPSqrt(sumofsquares));
+         check(A.normF(), L1.FixedPointMath.FPMath.FPSqrt(sumofsquares));
          try_success("normF...","");
       } catch ( java.lang.RuntimeException e ) {
          errorCount = try_failure(errorCount,"normF()...","incorrect norm calculation");

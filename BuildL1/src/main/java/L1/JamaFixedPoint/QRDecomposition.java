@@ -1,6 +1,6 @@
-package JamaFixedPoint;
-import FixedPointMath.FPMath;
-import JamaFixedPoint.util.*;
+package L1.JamaFixedPoint;
+import L1.FixedPointMath.FPMath;
+import L1.JamaFixedPoint.util.*;
 
 
 /** QR Decomposition.

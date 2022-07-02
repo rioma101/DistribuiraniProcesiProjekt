@@ -1,5 +1,5 @@
-package JamaFixedPoint;
-import FixedPointMath.FPMath;
+package L1.JamaFixedPoint;
+import L1.FixedPointMath.FPMath;
 
 /** Cholesky Decomposition.
    <P>

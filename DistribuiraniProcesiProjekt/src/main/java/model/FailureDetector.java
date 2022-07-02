@@ -1,9 +1,9 @@
 package model;
 
-public class FailureDetoctor extends Process{
+public class FailureDetector extends Process{
     boolean output[] = null;
 
-    FailureDetoctor(Linker initComm) {
+    FailureDetector(Linker initComm) {
         super(initComm);
     }
 }

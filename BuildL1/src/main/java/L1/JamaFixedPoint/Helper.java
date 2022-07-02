@@ -21,7 +21,7 @@
 % PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 */
 
-package JamaFixedPoint;
+package L1.JamaFixedPoint;
 
 public class Helper {
 

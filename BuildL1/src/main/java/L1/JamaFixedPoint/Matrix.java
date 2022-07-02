@@ -1,15 +1,14 @@
-package JamaFixedPoint;
+package L1.JamaFixedPoint;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.text.FieldPosition;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.StreamTokenizer;
 
-import FixedPointMath.FPMath;
-import JamaFixedPoint.util.*;
+import L1.FixedPointMath.FPMath;
+import L1.JamaFixedPoint.util.*;
 
 /**
    Jama = Java Matrix class.
