@@ -50,4 +50,16 @@ public class Linker {
     public int getMyId() { return myId; }
     public int getNumProc() { return N; }
     public void close() {connector.closeSockets();}
+
+    public MsgWithTime receiveMsgWithTime(int fromId) throws IOException {
+        String getline = dataIn[fromId].readLine();
+        Util.println(" received message " + getline);
+        StringTokenizer st = new StringTokenizer(getline);
+        int srcId = Integer.parseInt(st.nextToken());
+        int destId = Integer.parseInt(st.nextToken());
+        String tag = st.nextToken();
+        int time = Integer.parseInt(st.nextToken());
+        String msg = st.nextToken("#");
+        return new MsgWithTime(new Msg(srcId, destId, tag, msg), time);
+    }
 }

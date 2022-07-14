@@ -26,10 +26,21 @@ public class Process implements MsgHandler {
         sendMsg(destId,tag,String.valueOf(msg1)
                 +" "+String.valueOf(msg2)+" ");
     }
+    public void sendMsg(int destId, String tag, int msg[]) {
+        String m = "";
+        for(int i = 0; i < msg.length; i++) {
+            m += (String.valueOf(msg[i]) + " ");
+        }
+        sendMsg(destId, tag, String.valueOf(msg));
+    }
     public void sendMsg(int destId, String tag) {
         sendMsg(destId, tag, " 0 ");
     }
     public void broadcastMsg(String tag, int msg) {
+        for (int i = 0; i < N; i++)
+            if (i != myId) sendMsg(i, tag, msg);
+    }
+    public void broadcastMsg(String tag, int msg[]) {
         for (int i = 0; i < N; i++)
             if (i != myId) sendMsg(i, tag, msg);
     }
