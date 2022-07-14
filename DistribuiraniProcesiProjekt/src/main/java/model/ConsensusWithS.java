@@ -1,5 +1,6 @@
 package model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ConsensusWithS extends FailureDetector {
@@ -14,10 +15,19 @@ public class ConsensusWithS extends FailureDetector {
         super(initComm);
         this.myValue = myValue;
         this.V_p = new int[N];
+        java.util.Arrays.fill(this.V_p, 0);
         this.V_p[this.myId] = myValue;
-        this.delta_p = new int[N];
+        this.delta_p = new int[N + 1];
+        java.util.Arrays.fill(this.delta_p, 0);
         this.delta_p[this.myId] = myValue;
         this.messages = new ArrayList<ArrayList<Msg>>();
+        for(int i = 0; i < N; i++) {
+            ArrayList<Msg> a = new ArrayList<Msg>();
+            for(int j = 0; j < N; j++) {
+                a.add(null);
+            }
+            this.messages.add(a);
+        }
         this.lastMessages = new ArrayList<Msg>();
     }
 
@@ -31,43 +41,49 @@ public class ConsensusWithS extends FailureDetector {
         // faza 1:
         for(int i = 1; i < N; i++) {
             synchronized (this) {
+                this.delta_p[N] = i;
                 broadcastMsg("proposal", this.delta_p);
             }
             // sleep enough to receive messages for this round
             Util.mySleep(Symbols.roundTime);
-            for(int j = 0; j < N; j++) {
-                if(output[j]) {
-                    messages.get(i).add(j, receiveMsg(j));
-                }
-            }
-            this.delta_p = new int[N];
-            for(int j = 1; j < N; j++) {
-                int curr = 0;
-                Msg m = messages.get(i).get(j);
-                if(m != null) {
-                    curr = m.getMessage().charAt(2 * j);
-                }
-                if(this.V_p[j] == 0 && curr != 0) {
-                    this.V_p[j] = curr;
-                    this.delta_p[j] = curr;
+            synchronized (this) {
+                this.delta_p = new int[N + 1];
+                for (int j = 0; j < N; j++) {
+                    if(this.V_p[j] == 0) {
+                        int curr = 0;
+                        Msg m = messages.get(i).get(j);
+                        if (m != null) {
+                            curr = Character.getNumericValue(m.getMessage().charAt(2 * j + 1));
+                        }
+                        if (curr != 0) {
+                            this.V_p[j] = curr;
+                            this.delta_p[j] = curr;
+                        }
+                    } else {
+                        this.delta_p[j] = 0;
+                    }
                 }
             }
         }
-        // faza 2;
+        // faza 2:
         synchronized (this) {
-            broadcastMsg("proposal", delta_p);
+            broadcastMsg("proposal", V_p);
         }
         // sleep enough to receive messages for this round
         Util.mySleep(Symbols.roundTime);
-        for(int j = 0; j < N; j++) {
-            if(output[j]) {
-                lastMessages.add(j, receiveMsg(j));
+        synchronized (this) {
+            for (int j = 0; j < N; j++) {
+                if (output[j]) {
+                    lastMessages.add(j, receiveMsg(j));
+                } else {
+                    lastMessages.add(j, null);
+                }
             }
-        }
-        for(int j = 0; j < N; j++) {
-            for(int k = 0; k < N; k++) {
-                if(lastMessages.get(k).getMessage().charAt(2 * j) == 0) {
-                    this.V_p[j] = 0;
+            for (int j = 0; j < N; j++) {
+                for (int k = 0; k < N; k++) {
+                    if (lastMessages.get(k) != null && lastMessages.get(k).getMessage().charAt(2 * j) == '0') {
+                        this.V_p[j] = 0;
+                    }
                 }
             }
         }
@@ -79,6 +95,21 @@ public class ConsensusWithS extends FailureDetector {
                 }
             }
             return 0;
+        }
+    }
+
+    public Msg receiveMsg(int fromId) {
+        try {
+            Msg m = comm.receiveMsg(fromId);
+            String mes = m.getMessage();
+            if(mes.length() == 2 * N + 3) {
+                messages.get(Character.getNumericValue(mes.charAt(mes.length() - 2))).add(fromId, m);
+            }
+            return m;
+        } catch (IOException e){
+            System.out.println(e);
+            comm.close();
+            return null;
         }
     }
 

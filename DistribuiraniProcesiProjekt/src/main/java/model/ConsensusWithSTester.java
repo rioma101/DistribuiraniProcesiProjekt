@@ -6,11 +6,11 @@ public class ConsensusWithSTester {
         int myId = Integer.parseInt(args[1]);
         int numProc = Integer.parseInt(args[2]);
         Linker comm = new Linker(baseName, myId, numProc);
-        ConsensusWithS sp = new ConsensusWithS(comm, myId);
+        ConsensusWithS sp = new ConsensusWithS(comm, myId + 1);
         for (int i = 0; i < numProc; i++)
             if (i != myId)
                 (new ListenerThread(i, sp)).start();
-            sp.propose(myId);
-            System.out.println("The value decided:" + sp.decide());
+        sp.propose(myId);
+        System.out.println("The value decided:" + sp.decide());
     }
 }
