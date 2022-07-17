@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Random;
+
 public class ConsensusWithSTester {
     public static void main(String[] args) throws Exception {
         String baseName = args[0];
@@ -11,6 +13,13 @@ public class ConsensusWithSTester {
             if (i != myId)
                 (new ListenerThread(i, sp)).start();
         sp.propose(myId);
+        Random random = new Random();
+        int randomNumber = random.nextInt(5) - 1;
+        System.out.println("Random: " + randomNumber + ", id: " + myId + ", numProc: " + numProc);
+        if(myId == randomNumber || myId == numProc - randomNumber) {
+            System.out.println("Mocked error occurred!");
+            System.exit(0);
+        }
         System.out.println("The value decided:" + sp.decide());
     }
 }
