@@ -6,8 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class FDLProcess extends Process {
-    int N, myId;
-    Linker comm;
+    boolean isAlive;
     LamportClock lampCl;
     int[] maxRoundTripDelay;
     ArrayList<ArrayList<Integer>> pendingMessageST;
@@ -15,35 +14,42 @@ public class FDLProcess extends Process {
     public FDLProcess(Linker initComm) {
         super(initComm);
         pendingMessageST = new ArrayList<ArrayList<Integer>>();
+        for(int i = 0; i < N; i++) {
+            this.pendingMessageST.add(new ArrayList<Integer>());
+        }
         maxRoundTripDelay = new int[N];
         Arrays.fill(maxRoundTripDelay, 0);
+        lampCl = new LamportClock();
+        isAlive = true;
     }
 
     @Override
     public void sendMsg(int destId, String tag, String msg) {
-        msg = lampCl.getValue() + " " + msg;
-        Util.println("Sending msg to " + destId + ":" + tag + " " + msg);
-        pendingMessageST.get(destId).add(lampCl.getValue());
-        comm.sendMsg(destId, "appl", msg);
-        lampCl.tick();
-    }
-
-    public void sendMsg(int destId, String tag, String msg, int time) {
-        msg = time + " " + msg;
-        Util.println("Sending msg to " + destId + ":" + tag + " " + msg);
-        comm.sendMsg(destId, "appl", msg);
+        if(isAlive) {
+            if(!tag.equals("ack")) {
+                msg = lampCl.getValue() + " " + msg;
+                pendingMessageST.get(destId).add(lampCl.getValue());
+                lampCl.tick();
+            }
+            Util.println("Sending msg to " + destId + ": " + tag + " " + msg);
+            comm.sendMsg(destId, tag, msg);
+        }
     }
 
     @Override
     public Msg receiveMsg(int fromId) {
         try {
             MsgWithTime m = comm.receiveMsgWithTime(fromId);
-            String tag = m.getMessage().getTag();
-            if(tag.equals("appl") || tag.equals("ping")) {
-                sendMsg(fromId, "ack", "");
-            } else if(tag.equals("ack")) {
-                this.maxRoundTripDelay[fromId] = Math.max(lampCl.getValue() - m.getTime(), this.maxRoundTripDelay[fromId]);
-                this.pendingMessageST.get(fromId).remove(m.getTime());
+            if(isAlive) {
+                String tag = m.getMessage().getTag();
+                if (tag.equals("appl")) {
+                    this.sendMsg(fromId, "ack", m.getTime() + " ");
+                } else if(tag.equals("ping")) {
+                    this.sendMsg(fromId, "ack", lampCl.getValue() + " ");
+                } else if (tag.equals("ack")) {
+                    this.maxRoundTripDelay[fromId] = Math.max(lampCl.getValue() - m.getTime(), this.maxRoundTripDelay[fromId]);
+                    this.pendingMessageST.get(fromId).remove(Integer.valueOf(m.getTime()));
+                }
             }
             return m.getMessage();
         } catch (IOException e){
@@ -54,17 +60,19 @@ public class FDLProcess extends Process {
     }
 
     public String query(int fromId) {
-        if(pendingMessageST.get(fromId).isEmpty()) {
-            sendMsg(fromId, "ping", "", lampCl.getValue());
-            pendingMessageST.get(fromId).add(lampCl.getValue());
-            return "not_suspect";
-        } else {
-            int min = Collections.min(pendingMessageST.get(fromId));
-            if(lampCl.getValue() - min > maxRoundTripDelay[fromId]) {
-                return "suspect";
-            } else {
+        if(isAlive) {
+            if (pendingMessageST.get(fromId).isEmpty()) {
+                this.sendMsg(fromId, "ping", "S");
                 return "not_suspect";
+            } else {
+                int min = Collections.min(pendingMessageST.get(fromId));
+                if (lampCl.getValue() - min > maxRoundTripDelay[fromId]) {
+                    return "suspect";
+                } else {
+                    return "not_suspect";
+                }
             }
         }
+        return "";
     }
 }

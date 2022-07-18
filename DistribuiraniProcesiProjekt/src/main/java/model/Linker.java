@@ -58,7 +58,10 @@ public class Linker {
         int srcId = Integer.parseInt(st.nextToken());
         int destId = Integer.parseInt(st.nextToken());
         String tag = st.nextToken();
-        int time = Integer.parseInt(st.nextToken());
+        int time = 0;
+        if(!tag.equals("ping")) {
+            time = Integer.parseInt(st.nextToken());
+        }
         String msg = st.nextToken("#");
         return new MsgWithTime(new Msg(srcId, destId, tag, msg), time);
     }
